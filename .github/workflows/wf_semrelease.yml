@@ -68,6 +68,7 @@ jobs:
           fi
 
       - name: Show new version
+        run: |
           NewTag=$(git describe --tags $(git rev-list --tags --max-count=1) 2>/dev/null)
           if [["$LAST_TAG=="$NewTag""]]; then
           echo "Ce commit n'a pas aboutit a un tag"
