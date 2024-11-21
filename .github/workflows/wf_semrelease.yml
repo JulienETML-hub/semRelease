@@ -1,0 +1,76 @@
+
+name: SemRelease
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.PERSONNAL_ACCESS_TOKEN }}
+      - name: Setup Git
+        run: |
+          git config user.name "julien"
+          git config user.email "julienmares06@gmail.com"
+      - name: Get lastest tag
+        run: | 
+          git fetch -tags
+          LAST_TAG=$(git describe --tags $(git rev-list --tags --max-count=1) 2>/dev/null || echo "v0.0.0")
+          echo "LAST_TAG=$LAST_TAG" >> $GITHUB_ENV
+      - name: Analyze commit message
+        run: |        
+          if [[ "$COMMIT_MSG" == *"fix"*]]; then 
+          CHANGE_TYPE=PATCH
+          echo "CHANGETYPE=PATCH" >> $GITHUB_ENV
+  
+          elif [[ "$COMMIT_MSG" == *"feat"*]]; then 
+          CHANGE_TYPE=MINOR
+          echo "CHANGETYPE=MINOR" >> $GITHUB_ENV
+          
+          elif [[ "$COMMIT_MSG" == *"breankingChange"*]]; then 
+          CHANGE_TYPE=MAJOR
+          echo "CHANGETYPE=MAJOR" >> $GITHUB_ENV  
+          Fi
+
+      - name: Determine new Version
+        run: |
+          if [[ "$CHANGETYPE"=="MAJOR" ]]; then
+          MAJOR=$((MAJOR + 1))
+          MINOR=0
+          PATCH=0
+          elif [["$CHANGETYPE"=="MINOR" ]]; then
+          MAJOR=$((MAJOR))
+          MINOR=$((MINOR + 1))
+          PATCH=0
+          elif [["$CHANGETYPE"=="PATCH" ]]; then
+          MAJOR=$((MAJOR))
+          MINOR=$((MINOR))
+          PATCH=$((PATCH + 1))
+          else
+
+          fi
+          NEW_VERSION = $"v"$MAJOR"."$MINOR"."$PATCH"
+          echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
+      - name: Create a new tag
+        run: | 
+          if[["$NEW_VERSION"!="" || "$NEW_VERSION"!="$LAST_TAG"]]; then
+          git tag "$NEW_VERSION"
+          else
+          
+          fi
+
+      - name: Show new version
+          NewTag=$(git describe --tags $(git rev-list --tags --max-count=1) 2>/dev/null)
+          if [["$LAST_TAG=="$NewTag""]]; then
+          echo "Ce commit n'a pas aboutit a un tag"
+          else 
+          echo "$NewTag"
+          fi
