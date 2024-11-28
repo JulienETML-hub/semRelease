@@ -30,15 +30,15 @@ jobs:
           if [[ "$COMMIT_MSG" == *"fix"* ]]; then 
             CHANGE_TYPE=PATCH
             echo "CHANGETYPE=PATCH" >> $GITHUB_ENV
-      
+
           elif [[ "$COMMIT_MSG" == *"feat"* ]]; then 
             CHANGE_TYPE=MINOR
             echo "CHANGETYPE=MINOR" >> $GITHUB_ENV
-      
+
           elif [[ "$COMMIT_MSG" == *"breakingChange"* ]]; then 
             CHANGE_TYPE=MAJOR
             echo "CHANGETYPE=MAJOR" >> $GITHUB_ENV  
-         fi
+          fi
 
 
       - name: Determine new Version
