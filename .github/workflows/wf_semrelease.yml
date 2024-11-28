@@ -55,8 +55,6 @@ jobs:
             MAJOR=$((MAJOR))
             MINOR=$((MINOR))
             PATCH=$((PATCH + 1))
-          else
-
           fi
           NEW_VERSION = $"v"$MAJOR"."$MINOR"."$PATCH"
           echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
